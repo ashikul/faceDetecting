@@ -20,6 +20,7 @@
     var photo = null;
     var startbutton = null;
 
+    var params = null;
 
     function startup() {
         video = document.getElementById('video');
@@ -77,13 +78,20 @@
 
         clearphoto();
 
-        console.log('TEST');
-        console.log($  );
+
         //turn off alerts
         $('.alert-step-1').show();
         $('.alert-step-2').hide();
         $('.alert-success-match').hide();
         $('.alert-error-photo').hide();
+
+        //microsoft face API
+        var params = {
+            // Request parameters
+            "returnFaceId": "true",
+            "returnFaceLandmarks": "false",
+            "returnFaceAttributes": "false",
+        };
     }
 
     // Fill the photo with an indication that none has been
@@ -117,7 +125,34 @@
             //TODO: send to microsoft face detect
             //todo: if valid show popup and next step
             //todo: else shoow
-            console.log('TAKE PICTURE GOOD');
+
+            console.log('TAKE PICTURE GOOD2');
+            console.log(canvas);
+            console.log(photo);
+
+
+
+
+            $.ajax({
+                url: "https://westus.api.cognitive.microsoft.com/face/v1.0/detect?" + $.param(params),
+                beforeSend: function(xhrObj){
+                    // Request headers
+                    xhrObj.setRequestHeader("Content-Type","application/json");
+                    xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key","4db197d7bd384caf9334d174a5e012fb");
+                },
+                type: "POST",
+                // Request body
+                data: {
+                    url: 'https://avatars3.githubusercontent.com/u/3712704?v=3&s=460'
+                }
+            })
+                .done(function(data) {
+                    console.log('SUCCESS DATA');
+                    console.log(data);
+                })
+                .fail(function() {
+                    console.log('ERROR');
+                });
         } else {
             clearphoto();
         }

@@ -10,6 +10,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node app.js",
+    "dev": "nodemon app.js",
     "test": "mocha --reporter spec",
     "postinstall": "npm rebuild node-sass"
   },
