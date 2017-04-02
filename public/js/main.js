@@ -1,7 +1,7 @@
 (function($) {
 
 
-    console.log('Loading Camera 1123s111');
+    console.log('Loading Camera 4551');
     // The width and height of the captured photo. We will set the
     // width to the value defined here, but the height will be
     // calculated based on the aspect ratio of the input stream.
@@ -132,19 +132,26 @@
                 "returnFaceAttributes": "",
             };
 
+            var photoURL = "https://avatars3.githubusercontent.com/u/3712704?v=3&s=460";
+            // var dataURL = canvas.toDataURL();
+            // console.log(dataURL);
 
             $.ajax({
                 url: "https://westus.api.cognitive.microsoft.com/face/v1.0/detect?" + $.param(params),
                 beforeSend: function(xhrObj){
                     // Request headers
-                    xhrObj.setRequestHeader("Content-Type","application/json");
+                    // xhrObj.setRequestHeader("Content-Type","application/json");
+                    xhrObj.setRequestHeader("Content-Type","application/octet-stream");
                     xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key","4db197d7bd384caf9334d174a5e012fb");
                 },
                 type: "POST",
                 // Request body
-                data: {
-                    url: 'https://avatars3.githubusercontent.com/u/3712704?v=3&s=460'
-                }
+                // data:  "{" + "\"url\":\"" + photo.src + "\"}",
+                // data:  "{" + "\"url\":\"" + photoURL + "\"}", //this works
+                processData: false,
+                contentType: 'application/octet-stream',
+                // "Ocp-Apim-Subscription-Key": "4db197d7bd384caf9334d174a5e012fb",
+                data: makeblob(canvas.toDataURL())
             })
                 .done(function(data) {
                     console.log('SUCCESS DATA');
@@ -153,6 +160,9 @@
                 .fail(function() {
                     console.log('ERROR');
                 });
+
+
+
         } else {
             clearphoto();
         }
@@ -162,5 +172,26 @@
     // once loading is complete.
     window.addEventListener('load', startup, false);
 
+    var makeblob = function (dataURL) {
+        var BASE64_MARKER = ';base64,';
+        if (dataURL.indexOf(BASE64_MARKER) == -1) {
+            var parts = dataURL.split(',');
+            var contentType = parts[0].split(':')[1];
+            var raw = decodeURIComponent(parts[1]);
+            return new Blob([raw], { type: contentType });
+        }
+        var parts = dataURL.split(BASE64_MARKER);
+        var contentType = parts[0].split(':')[1];
+        var raw = window.atob(parts[1]);
+        var rawLength = raw.length;
+
+        var uInt8Array = new Uint8Array(rawLength);
+
+        for (var i = 0; i < rawLength; ++i) {
+            uInt8Array[i] = raw.charCodeAt(i);
+        }
+
+        return new Blob([uInt8Array], { type: contentType });
+    }
 
 })(window.jQuery);
