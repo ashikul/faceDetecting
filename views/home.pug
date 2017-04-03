@@ -4,6 +4,7 @@ block content
     .alert.alert-info.alert-step-1  Take initial photo
     .alert.alert-info.alert-step-2  Take second photo
     .alert.alert-success.alert-success-match  Photos match! (insert response result here)
+    .alert.alert-success.alert-photo-success  Face is successfully detected in the photo taken
     .alert.alert-danger.alert-error-photo  Invalid photo. No face detected. Please try again.
     .contentarea
         .camera
@@ -12,3 +13,5 @@ block content
         canvas#canvas
         .output
             img#photo(alt='The screen capture will appear in this box.')
+        .output
+            img#photo2(alt='The 2nd screen capture will appear in this box.')

@@ -19,12 +19,17 @@
     var video = null;
     var canvas = null;
     var photo = null;
+    var photo2 = null;
     var startbutton = null;
+    var validFirstPhoto = false;
+    var faceId1 = '';
+    var faceId2 = '';
 
     function startup() {
         video = document.getElementById('video');
         canvas = document.getElementById('canvas');
         photo = document.getElementById('photo');
+        photo2 = document.getElementById('photo2');
         startbutton = document.getElementById('startbutton');
 
         navigator.getMedia = ( navigator.getUserMedia ||
@@ -82,6 +87,7 @@
         $('.alert-step-1').show();
         $('.alert-step-2').hide();
         $('.alert-success-match').hide();
+        $('.alert-photo-success').hide();
         $('.alert-error-photo').hide();
 
         //microsoft face API
@@ -98,6 +104,7 @@
 
         var data = canvas.toDataURL('image/png');
         photo.setAttribute('src', data);
+        photo2.setAttribute('src', data);
     }
 
     // Capture a photo by fetching the current contents of the video
@@ -114,13 +121,21 @@
             context.drawImage(video, 0, 0, width, height);
 
             var data = canvas.toDataURL('image/png');
-            photo.setAttribute('src', data);
+
+
+            if(!validFirstPhoto){
+                photo.setAttribute('src', data);
+            } else {
+                photo2.setAttribute('src', data);
+            }
+            // photo.setAttribute('src', data);
+            // photo2.setAttribute('src', data);
 
             //TODO: send to microsoft face detect
             //todo: if valid show popup and next step
             //todo: else shoow
 
-            console.log('TAKE PICTURE GOOD22323');
+            console.log('TAKE PICTURE ACTION');
             // console.log(canvas);
             // console.log(photo.src); //this works and shows base64 data well. do I need to put a url on it?
             // console.log(photo.id);
@@ -136,30 +151,170 @@
             // var dataURL = canvas.toDataURL();
             // console.log(dataURL);
 
-            $.ajax({
-                url: "https://westus.api.cognitive.microsoft.com/face/v1.0/detect?" + $.param(params),
-                beforeSend: function(xhrObj){
-                    // Request headers
-                    // xhrObj.setRequestHeader("Content-Type","application/json");
-                    xhrObj.setRequestHeader("Content-Type","application/octet-stream");
-                    xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key","4db197d7bd384caf9334d174a5e012fb");
-                },
-                type: "POST",
-                // Request body
-                // data:  "{" + "\"url\":\"" + photo.src + "\"}",
-                // data:  "{" + "\"url\":\"" + photoURL + "\"}", //this works
-                processData: false,
-                contentType: 'application/octet-stream',
-                // "Ocp-Apim-Subscription-Key": "4db197d7bd384caf9334d174a5e012fb",
-                data: makeblob(canvas.toDataURL())
-            })
-                .done(function(data) {
-                    console.log('SUCCESS DATA');
-                    console.log(data);
+            if(!validFirstPhoto) {
+                $.ajax({
+                    url: "https://westus.api.cognitive.microsoft.com/face/v1.0/detect?" + $.param(params),
+                    beforeSend: function (xhrObj) {
+                        // Request headers
+                        // xhrObj.setRequestHeader("Content-Type","application/json");
+                        xhrObj.setRequestHeader("Content-Type", "application/octet-stream");
+                        xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", "4db197d7bd384caf9334d174a5e012fb");
+                    },
+                    type: "POST",
+                    // Request body
+                    // data:  "{" + "\"url\":\"" + photo.src + "\"}",
+                    // data:  "{" + "\"url\":\"" + photoURL + "\"}", //this works
+                    processData: false,
+                    contentType: 'application/octet-stream',
+                    // "Ocp-Apim-Subscription-Key": "4db197d7bd384caf9334d174a5e012fb",
+                    data: makeblob(canvas.toDataURL())
                 })
-                .fail(function() {
-                    console.log('ERROR');
-                });
+                    .done(function (data) {
+                        console.log('SUCCESS 1 DATA');
+                        console.log(data);
+                        console.log(data[0].faceId);
+                        faceId1 = data[0].faceId;
+
+                        $('.alert-step-1').hide();
+                        $('.alert-step-2').show();
+                        $('.alert-success-match').hide();
+                        $('.alert-photo-success').show();
+                        $('.alert-error-photo').hide();
+                        validFirstPhoto= true;
+                        // startbutton.text("Take 2nd Photo");
+                        $("#startbutton").text("Take 2nd Photo");
+                    })
+                    .fail(function () {
+                        console.log('ERROR');
+                        $('.alert-step-1').show();
+                        $('.alert-step-2').hide();
+                        $('.alert-success-match').hide();
+                        $('.alert-photo-success').hide();
+                        $('.alert-error-photo').show();
+                    });
+            } else {
+                $.ajax({
+                    url: "https://westus.api.cognitive.microsoft.com/face/v1.0/detect?" + $.param(params),
+                    beforeSend: function (xhrObj) {
+                        // Request headers
+                        // xhrObj.setRequestHeader("Content-Type","application/json");
+                        xhrObj.setRequestHeader("Content-Type", "application/octet-stream");
+                        xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", "4db197d7bd384caf9334d174a5e012fb");
+                    },
+                    type: "POST",
+                    // Request body
+                    // data:  "{" + "\"url\":\"" + photo.src + "\"}",
+                    // data:  "{" + "\"url\":\"" + photoURL + "\"}", //this works
+                    processData: false,
+                    contentType: 'application/octet-stream',
+                    // "Ocp-Apim-Subscription-Key": "4db197d7bd384caf9334d174a5e012fb",
+                    data: makeblob(canvas.toDataURL())
+                })
+                    .done(function (data) {
+                        console.log('SUCCESS 2 DATA');
+                        console.log(data);
+
+                        faceId2 = data[0].faceId;
+                        // console.log(data[0]);
+                        // console.log(data.faceId);
+
+                        // $('.alert-step-1').hide();
+                        $('.alert-step-2').hide();
+                        // $('.alert-success-match').hide();
+                        $('.alert-photo-success').hide();
+                        // $('.alert-error-photo').hide();
+                        // validFirstPhoto= true;
+                        // startbutton.text("Take 2nd Photo")
+
+
+
+
+                        //make call for matching
+                        //make call for matching
+                        //make call for matching
+                        //make call for matching
+                        //make call for matching
+                        console.log('VERIFY CALL');
+                        console.log(faceId1);
+                        console.log(faceId2);
+                        $.ajax({
+                            url: "https://westus.api.cognitive.microsoft.com/face/v1.0/verify",
+                            beforeSend: function (xhrObj) {
+                                // Request headers
+                                xhrObj.setRequestHeader("Content-Type","application/json");
+                                // xhrObj.setRequestHeader("Content-Type", "application/octet-stream");
+                                xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", "4db197d7bd384caf9334d174a5e012fb");
+                            },
+                            type: "POST",
+                            // Request body
+                            // data:  "{" + "\"url\":\"" + photo.src + "\"}",
+                            // data:  "{" + "\"url\":\"" + photoURL + "\"}", //this works
+                            // processData: false,
+                            // contentType: 'application/octet-stream',
+                            // "Ocp-Apim-Subscription-Key": "4db197d7bd384caf9334d174a5e012fb",
+                            data: JSON.stringify({
+                                faceId1: faceId1,
+                                faceId2: faceId2
+                            })
+
+                        })
+                            .done(function (data) {
+                                console.log('SUCCESS VERIFY DATA');
+                                console.log(data);
+                                console.log(data.confidence);
+                                console.log(data.isIdentical);
+
+                                // faceId2 = data[0].faceId;
+                                // console.log(data[0]);
+                                // console.log(data.faceId);
+
+                                $('.alert-step-1').hide();
+                                $('.alert-step-2').hide();
+                                $('.alert-success-match').show();
+                                $('.alert-photo-success').hide();
+                                $('.alert-error-photo').hide();
+
+                                // validFirstPhoto= true;
+                                $("#startbutton").hide();
+                                $("#video").hide();
+
+                                if(data.isIdentical){
+                                    $('.alert-success-match').text("These photos are the same person. Confidence score: " + data.confidence );
+                                } else {
+                                    $('.alert-success-match').text("These photos are not the same person. Confidence score: " + data.confidence );
+                                }
+
+
+
+
+
+
+                            })
+                            .fail(function () {
+                                console.log('ERROR');
+                                $('.alert-step-1').hide();
+                                $('.alert-step-2').show();
+                                $('.alert-success-match').hide();
+                                $('.alert-photo-success').hide();
+                                $('.alert-error-photo').show();
+                            });
+
+
+
+
+
+                    })
+                    .fail(function () {
+                        console.log('ERROR');
+                        $('.alert-step-1').hide();
+                        $('.alert-step-2').show();
+                        $('.alert-success-match').hide();
+                        $('.alert-photo-success').hide();
+                        $('.alert-error-photo').show();
+                    });
+
+
+            }
 
 
 
