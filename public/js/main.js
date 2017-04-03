@@ -170,27 +170,46 @@
                     data: makeblob(canvas.toDataURL())
                 })
                     .done(function (data) {
-                        console.log('SUCCESS 1 DATA');
+                        console.log('SUCCESS 11 DATA');
                         console.log(data);
-                        console.log(data[0].faceId);
-                        faceId1 = data[0].faceId;
 
-                        $('.alert-step-1').hide();
-                        $('.alert-step-2').show();
-                        $('.alert-success-match').hide();
-                        $('.alert-photo-success').show();
-                        $('.alert-error-photo').hide();
-                        validFirstPhoto= true;
-                        // startbutton.text("Take 2nd Photo");
-                        $("#startbutton").text("Take 2nd Photo");
+
+                        if(data.length > 0 ){
+                            console.log(data[0].faceId);
+                            faceId1 = data[0].faceId;
+
+                            $('.alert-step-1').hide();
+                            $('.alert-step-2').show();
+                            $('.alert-success-match').hide();
+                            $('.alert-photo-success').show();
+                            $('.alert-error-photo').hide();
+                            validFirstPhoto= true;
+                            // startbutton.text("Take 2nd Photo");
+                            $("#startbutton").text("Take 2nd Photo");
+
+                        } else {
+                            console.log('ERROR');
+                            $('.alert-step-1').hide();
+                            $('.alert-step-2').hide();
+                            $('.alert-success-match').hide();
+                            $('.alert-photo-success').hide();
+                            $('.alert-error-photo').show();
+                            $("#startbutton").hide();
+
+                            $("#video").hide();
+                        }
+
                     })
                     .fail(function () {
                         console.log('ERROR');
-                        $('.alert-step-1').show();
+                        $('.alert-step-1').hide();
                         $('.alert-step-2').hide();
                         $('.alert-success-match').hide();
                         $('.alert-photo-success').hide();
                         $('.alert-error-photo').show();
+                        $("#startbutton").hide();
+
+                        $("#video").hide();
                     });
             } else {
                 $.ajax({
@@ -213,6 +232,9 @@
                     .done(function (data) {
                         console.log('SUCCESS 2 DATA');
                         console.log(data);
+
+                        if(data.length > 0 ){
+
 
                         faceId2 = data[0].faceId;
                         // console.log(data[0]);
@@ -286,9 +308,6 @@
 
 
 
-
-
-
                             })
                             .fail(function () {
                                 console.log('ERROR');
@@ -297,8 +316,21 @@
                                 $('.alert-success-match').hide();
                                 $('.alert-photo-success').hide();
                                 $('.alert-error-photo').show();
-                            });
+                                $("#startbutton").hide();
 
+                                $("#video").hide();
+                            });
+                        } else {
+                            console.log('ERROR');
+                            $('.alert-step-1').hide();
+                            $('.alert-step-2').hide();
+                            $('.alert-success-match').hide();
+                            $('.alert-photo-success').hide();
+                            $('.alert-error-photo').show();
+                            $("#startbutton").hide();
+
+                            $("#video").hide();
+                        }
 
 
 
