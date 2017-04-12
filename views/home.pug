@@ -1,5 +1,6 @@
 extends layout
 
+
 block content
     .alert.alert-info.alert-step-1  Take initial photo
     .alert.alert-info.alert-step-2  Take second photo
@@ -15,3 +16,7 @@ block content
             img#photo(alt='The screen capture will appear in this box.')
         .output
             img#photo2(alt='The 2nd screen capture will appear in this box.')
+    script(src='/js/lib/jquery-3.1.1.min.js')
+    script(src='/js/camera.js')
+
+
