@@ -97,6 +97,7 @@
     function onGetWav () {
         console.log('onGetWav');
         wavDATA = microm.getWav();
+        console.log(wavDATA);
     }
 
     function onGetBase64 () {
