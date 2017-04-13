@@ -69,6 +69,12 @@
     function onPlay () {
         console.log('onPlay');
         microm.play();
+
+        //this works for playing audio
+        // var audio = new Audio('/hero.wav');
+        // console.log(audio.src);
+        // console.log(audio);
+        // audio.play();
     }
 
     function onPause () {
@@ -153,8 +159,14 @@
         //SEPERATE THIS
         // onGetBase64();
         // console.log('BASE64DATA');
+        onGetWav();
         console.log('WAVA DATA');
-        onGetWav ();
+        console.log(wavDATA);
+
+        var audio = new Audio('/hero.wav');
+
+        wavDATA = audio.src;
+        // wavDATA = '/hero.wav';
         // console.log(base
         // 64DATA);
         console.log('ID');
