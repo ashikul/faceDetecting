@@ -1,5 +1,4 @@
-(function($) {
-
+(function ($) {
 
     console.log('Loading Voice');
 
@@ -7,7 +6,8 @@
     window.microm = null;
     var status, currentTime, duration;
 
-    function ready() {
+
+    function ready () {
 
         console.log('Loading Microm');
 
@@ -33,110 +33,110 @@
         click('#get-wav', onGetWav);
         click('#get-base64', onGetBase64);
         click('#download', onDownload);
+
     }
 
-    function onLoaded(time) {
+    function onLoaded (time) {
         duration.innerHTML = time;
     }
 
-    function updateCurrentTime(time) {
+    function updateCurrentTime (time) {
         currentTime.innerHTML = time;
     }
 
-    function onPlayEvent() {
+    function onPlayEvent () {
         status.innerHTML = 'Playing';
     }
 
-    function onPauseEvent(currentTime) {
+    function onPauseEvent (currentTime) {
         status.innerHTML = 'Paused';
     }
 
-    function onEndEvent() {
+    function onEndEvent () {
         status.innerHTML = 'Ended';
     }
 
-    function onRecord() {
-        microm.record().then(function() {
+    function onRecord () {
+        microm.record().then(function () {
             status.innerHTML = 'Recording';
-        }).catch(function(error) {
+        }).catch(function (error) {
             console.log('error recording', error);
         })
     }
 
-    function onPlay() {
+    function onPlay () {
         console.log('onPlay');
         microm.play();
     }
 
-    function onPause() {
+    function onPause () {
         console.log('onPause');
         microm.pause();
     }
 
-    function onStop() {
-        microm.stop().then(function(mp3) {
+    function onStop () {
+        microm.stop().then(function (mp3) {
             status.innerHTML = 'Paused';
         });
     }
 
-    function onGetMp3() {
-        microm.getMp3().then(function(mp3) {
+    function onGetMp3 () {
+        microm.getMp3().then(function (mp3) {
             console.log('onGetMp3', mp3);
         });
     }
 
-    function onGetWav() {
+    function onGetWav () {
         console.log('onGetWav');
         microm.getWav();
     }
 
-    function onGetBase64() {
-        microm.getBase64().then(function(base64string) {
+    function onGetBase64 () {
+        microm.getBase64().then(function (base64string) {
             console.log(base64string);
         });
     }
 
-    function onDownload() {
-        microm.download('microm');
+    function onDownload () {
+        // microm.download('microm');
+        getProfileID ();
     }
 
-    function $(selector) {
+    function $X (selector) {
         return document.querySelector(selector);
     }
 
-    function click(selector, callback) {
-        $(selector).addEventListener('click', callback);
+    function click (selector, callback) {
+        $X(selector).addEventListener('click', callback);
     }
-
 
     //TODO: mcirosfot api logic
 
-    
     function getProfileID () {
         var params = {
             // Request parameters
         };
         $.ajax({
-            url: "https://westus.api.cognitive.microsoft.com/spid/v1.0/identificationProfiles?" + $.param(params),
-            beforeSend: function(xhrObj){
+            url: "https://westus.api.cognitive.microsoft.com/spid/v1.0/identificationProfiles?",
+            beforeSend: function (xhrObj) {
                 // Request headers
-                xhrObj.setRequestHeader("Content-Type","application/json");
-                xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key","02b07347eb7244cbb6d65a37548505ce");
+                xhrObj.setRequestHeader("Content-Type", "application/json");
+                xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", "02b07347eb7244cbb6d65a37548505ce");
             },
             type: "POST",
             // Request body
-            data: "{body}",
+            data: JSON.stringify({
+                "locale": "en-us",
+            }),
         })
-            .done(function(data) {
-                alert("success");
+            .done(function (data) {
+                alert("success IDENTIFICATION PROFILE");
+                console.log(data);
             })
-            .fail(function() {
+            .fail(function () {
                 alert("error");
             });
     }
-
-
-
 
 })(window.jQuery);
 // (function() {
