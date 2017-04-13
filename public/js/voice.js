@@ -6,6 +6,8 @@
     window.microm = null;
     var status, currentTime, duration;
 
+    var base64DATA;
+    var wavDATA;
 
     function ready () {
 
@@ -88,18 +90,19 @@
 
     function onGetWav () {
         console.log('onGetWav');
-        microm.getWav();
+        wavDATA = microm.getWav();
     }
 
     function onGetBase64 () {
         microm.getBase64().then(function (base64string) {
             console.log(base64string);
+            base64DATA = base64string;
         });
     }
 
     function onDownload () {
         // microm.download('microm');
-        getProfileID ();
+        getProfileID();
     }
 
     function $X (selector) {
@@ -130,12 +133,83 @@
             }),
         })
             .done(function (data) {
-                alert("success IDENTIFICATION PROFILE");
+                console.log("success IDENTIFICATION PROFILE");
                 console.log(data);
+
+                var verID = data.identificationProfileId;
+
+                //TODO: now get wave file
+                verifyPhrase(verID);
+
             })
             .fail(function () {
                 alert("error");
             });
+    }
+
+    function verifyPhrase (id) {
+
+        console.log('MAKING VERIFY PHRASE CALL');
+        //SEPERATE THIS
+        // onGetBase64();
+        // console.log('BASE64DATA');
+        console.log('WAVA DATA');
+        onGetWav ();
+        // console.log(base
+        // 64DATA);
+        console.log('ID');
+        console.log(id);
+
+        var params = {
+            "verificationProfileId": "" + id
+        };
+
+        $.ajax({
+            url: "https://westus.api.cognitive.microsoft.com/spid/v1.0/verify?" + $.param(params),
+            beforeSend: function (xhrObj) {
+                // Request headers
+                xhrObj.setRequestHeader("Content-Type", "application/octet-stream");
+                xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", "02b07347eb7244cbb6d65a37548505ce");
+            },
+            type: "POST",
+            // processData: false,
+            contentType: 'application/octet-stream',
+            // data: makeblob(base64DATA) //this doesn towrk
+            data: wavDATA
+        })
+            .done(function (data) {
+                console.log('success VERIFICATION');
+                console.log('success VERIFICATION');
+                console.log('success VERIFICATION');
+                console.log('success VERIFICATION');
+                console.log('success VERIFICATION');
+                console.log(data);
+            })
+            .fail(function () {
+                alert("error VERIFICATION");
+            });
+    }
+
+    var makeblob = function (dataURL) {
+        var BASE64_MARKER = ';base64,';
+        if(dataURL.indexOf(BASE64_MARKER) == -1) {
+            var parts = dataURL.split(',');
+            var contentType = parts[0].split(':')[1];
+            var raw = decodeURIComponent(parts[1]);
+            return new Blob([raw], {type: contentType});
+        }
+        var parts = dataURL.split(BASE64_MARKER);
+        var contentType = parts[0].split(':')[1];
+        var raw = window.atob(parts[1]);
+        var rawLength = raw.length;
+
+        var uInt8Array = new Uint8Array(rawLength);
+
+        for(var i = 0; i < rawLength; ++i) {
+            uInt8Array[i] = raw.charCodeAt(i);
+        }
+
+        return new Blob([uInt8Array], {type: contentType});
     }
 
 })(window.jQuery);
