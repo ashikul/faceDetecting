@@ -406,8 +406,9 @@
             type: "POST",
             processData: false,
             // contentType: false,
-            contentType: 'application/octet-stream',
+            contentType: 'audio/wav; samplerate=16000',
             // data: makeblob(base64DATA) //this doesn towrk
+
             data: recordingBlob
         })
             .done(function (data) {
@@ -421,6 +422,8 @@
             .fail(function () {
                 alert("error VERIFICATION");
             });
+
+        // I sent this file to Project oxford with my test program that is in ruby and it works properly. I think the issue might be in the other params you are sending. Try changing your 'Content Type' header to 'audio/wav; samplerate=1600' this is the header that I used. I also send a 'Content Length' header with the size of the file. I'm not sure if 'Content Length' is required but it is good standard to include it.
     }
 
     function createDownloadLink () {
@@ -444,6 +447,45 @@
             recordingURL = url;
             recordingBlob = blob;
         });
+    }
+
+    function downsampleBuffer(buffer, rate) {
+        if (rate == sampleRate) {
+            return buffer;
+        }
+        if (rate > sampleRate) {
+            throw "downsampling rate show be smaller than original sample rate";
+        }
+        var sampleRateRatio = sampleRate / rate;
+        var newLength = Math.round(buffer.length / sampleRateRatio);
+        var result = new Float32Array(newLength);
+        var offsetResult = 0;
+        var offsetBuffer = 0;
+        while (offsetResult < result.length) {
+            var nextOffsetBuffer = Math.round((offsetResult + 1) * sampleRateRatio);
+            var accum = 0, count = 0;
+            for (var i = offsetBuffer; i < nextOffsetBuffer && i < buffer.length; i++) {
+                accum += buffer[i];
+                count++;
+            }
+            result[offsetResult] = accum / count;
+            offsetResult++;
+            offsetBuffer = nextOffsetBuffer;
+        }
+        return result;
+    }
+
+    function exportWAV(rate, type) {
+        var bufferL = mergeBuffers(recBuffersL, recLength);
+        var bufferR = mergeBuffers(recBuffersR, recLength);
+        var interleaved = interleave(bufferL, bufferR);
+        var downsampledBuffer = downsampleBuffer(interleaved, rate);
+        var dataview = encodeWAV(rate, downsampledBuffer, false);
+        var audioBlob = new Blob([ dataview ], {
+            type : type
+        });
+
+        this.postMessage(audioBlob);
     }
 
 })(window.jQuery);
