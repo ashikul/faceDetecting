@@ -1,32 +1,46 @@
 extends layout
 
 block content
-    h3 TODO
-    button#record Record
+    //button#record Record
+    //|
+    //button#play Play
+    //|
+    //button.hide#pause Pause
+    //|
+    //button#stop Stop
+    //|
+    //button.hide#get-mp3 Get mp3
+    //|
+    //button#get-wav Get wav
+    //|
+    //button.hide#get-base64 Get base64
+    //|
+    //button#download Verify Audio
+    //hr
+    //#status
+    //    | Status:
+    //    span paused
+    //#duration
+    //    | Duration:
+    //    span 0
+    //#current-time
+    //    | Current time:
+    //    span 0
+    p -Make sure you are using a recent version of Google Chrome.
+    //p
+    //    | -Also before you enable microphone input either plug in headphones or turn the volume down if you want to avoid ear splitting feedback!
+    //|
+    button#record record
     |
-    button#play Play
+    button#stop stop
     |
-    button.hide#pause Pause
+    button#verify verify
     |
-    button#stop Stop
-    |
-    button.hide#get-mp3 Get mp3
-    |
-    button#get-wav Get wav
-    |
-    button.hide#get-base64 Get base64
-    |
-    button#download Verify Audio
-    hr
-    #status
-        | Status:
-        span paused
-    #duration
-        | Duration:
-        span 0
-    #current-time
-        | Current time:
-        span 0
+    h2 Recordings
+    ul#recordingslist
+    h2 Log
+    pre#log.
+
     script(src='/js/lib/jquery-3.1.1.min.js')
     script(src='/js/lib/microm.js')
     script(src='/js/voice.js')
